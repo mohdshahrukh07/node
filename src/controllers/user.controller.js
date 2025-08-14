@@ -3,7 +3,6 @@ import { ApiError } from "../utils/ApiError.js"
 import { User } from "../models/user.model.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/APiResponse.js";
-import { response } from "express";
 import jwt from 'jsonwebtoken';
 import mongoose from "mongoose";
 const generateAccessAndRefeshToken = async (userId) => {
@@ -20,7 +19,7 @@ const generateAccessAndRefeshToken = async (userId) => {
     } catch (error) {
         throw new ApiError(500, 'Something went wrong while login')
     }
-}
+};
 const registerUser = asyncHandler(async (req, res) => {
     const { fullName, email, username, password } = req.body;
     if (
@@ -71,7 +70,7 @@ const registerUser = asyncHandler(async (req, res) => {
     return res.status(201,).json(
         new ApiResponse(200, createdUser, "User registered successfully")
     )
-})
+});
 
 const loginUser = asyncHandler(async (req, res) => {
     try {
@@ -133,7 +132,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     } catch (error) {
         throw new ApiError(401, "something went wrong")
     }
-})
+});
 const refreshAccessToken = asyncHandler(async (req, res) => {
     try {
         const incomingRefreshToken = req.cookies.refreshToken || req.refreshToken;
@@ -172,7 +171,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     } catch (error) {
         throw new ApiError(401, error?.message || "invalid refresh token")
     }
-})
+});
 const changeCurrentPassword = asyncHandler(async (req, res) => {
     try {
         const { oldPassword, newPassword } = req.body;
@@ -201,7 +200,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     } catch (error) {
         throw new ApiError(500, "failed to get User Details")
     }
-})
+});
 const updateAccountDetails = asyncHandler(async (req, res) => {
     try {
         const { fullName, email, } = req.body;
@@ -223,7 +222,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     } catch (error) {
         throw new ApiError(500, "failed to update user details")
     }
-})
+});
 const updateUserAvatar = asyncHandler(async (req, res) => {
     try {
         const avatarLocalPath = req.file?.path;
@@ -255,7 +254,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
         throw new ApiError(500, "something went wrong")
     }
 
-})
+});
 
 const updateUserCoverImage = asyncHandler(async (req, res) => {
     try {
@@ -288,7 +287,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
         throw new ApiError(500, "something went wrong")
     }
 
-})
+});
 const getUserChannelProfile = asyncHandler(async (req, res) => {
     try {
         const { username } = req.params;
@@ -370,28 +369,28 @@ const getWatchHistory = asyncHandler(async (req, res) => {
                 localField: "watchHistory",
                 foreignField: "_id",
                 as: "watchHistory",
-                pipeline:[
+                pipeline: [
                     {
-                        $lookup:{
-                            from:"users",
-                            localField:"owner",
-                            foreignField:"_id",
-                            as:"owner",
+                        $lookup: {
+                            from: "users",
+                            localField: "owner",
+                            foreignField: "_id",
+                            as: "owner",
                             pipeline: [
                                 {
-                                    $project:{
-                                        fullName:1,
-                                        username:1,
-                                        avatar:1,
+                                    $project: {
+                                        fullName: 1,
+                                        username: 1,
+                                        avatar: 1,
                                     }
                                 }
                             ]
                         }
                     },
                     {
-                        $addFields:{
-                            owner:{
-                                $first:"$owner"
+                        $addFields: {
+                            owner: {
+                                $first: "$owner"
                             }
                         }
                     }
@@ -400,6 +399,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
         }
     ]);
 
-    return res.status(200).json(new ApiResponse(200,user[0].watchHistory,"watch history fetched successfully"));
-})
-export { registerUser, loginUser, logoutUser, refreshAccessToken, changeCurrentPassword, getCurrentUser, updateAccountDetails, updateUserAvatar, updateUserCoverImage, getUserChannelProfile,getWatchHistory };
+    return res.status(200).json(new ApiResponse(200, user[0].watchHistory, "watch history fetched successfully"));
+});
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken, changeCurrentPassword, getCurrentUser, updateAccountDetails, updateUserAvatar, updateUserCoverImage, getUserChannelProfile, getWatchHistory };
